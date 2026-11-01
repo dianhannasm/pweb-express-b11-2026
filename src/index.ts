@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 
 import heroRoutes from './routes/hero.routes';
 import skinRoutes from './routes/skin.routes';
+import playerRoutes from './routes/player.routes';
 
 import logger from './middlewares/logger.middleware';
 import notFound from './middlewares/not-found.middleware';
@@ -40,6 +41,9 @@ app.use('/api/heroes', heroRoutes);
 
 // Skin API
 app.use('/api/skins', skinRoutes);
+
+// Player API
+app.use('/api/players', playerRoutes);
 
 // Not Found Middleware
 app.use(notFound);

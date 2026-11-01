@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,7 +6,48 @@ datasource db {
   provider = "postgresql"
 }
 
-// --- ENUM ---
+model Hero {
+  id           Int          @id @default(autoincrement())
+  name         String       @unique
+  role         Role
+  lane         Lane
+  releaseYear  Int
+  priceBp      Int?
+  priceDiamond Int?
+  playerHeroes PlayerHero[]
+  skins        Skin[]
+}
+
+model Skin {
+  id           Int    @id @default(autoincrement())
+  name         String
+  rarity       Rarity
+  priceDiamond Int
+  heroId       Int
+  hero         Hero   @relation(fields: [heroId], references: [id], onDelete: Cascade)
+}
+
+model Player {
+  id           Int          @id @default(autoincrement())
+  nickname     String       @unique
+  bp           Int          @default(10000)
+  diamond      Int          @default(0)
+  createdAt    DateTime     @default(now())
+  playerHeroes PlayerHero[]
+}
+
+model PlayerHero {
+  id        Int      @id @default(autoincrement())
+  playerId  Int
+  heroId    Int
+  currency  Currency
+  pricePaid Int
+  hero      Hero     @relation(fields: [heroId], references: [id])
+  player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([playerId, heroId])
+}
+
 enum Role {
   TANK
   FIGHTER
@@ -41,48 +77,4 @@ enum Rarity {
 enum Currency {
   BP
   DIAMOND
-}
-
-// --- TABEL ---
-model Hero {
-  id           Int          @id @default(autoincrement())
-  name         String       @unique
-  role         Role
-  lane         Lane
-  releaseYear  Int
-  priceBp      Int?
-  priceDiamond Int?
-  skins        Skin[]
-  playerHeroes PlayerHero[]
-}
-
-model Skin {
-  id           Int    @id @default(autoincrement())
-  name         String
-  rarity       Rarity
-  priceDiamond Int
-  heroId       Int
-  hero         Hero   @relation(fields: [heroId], references: [id], onDelete: Cascade)
-}
-
-model Player {
-  id           Int          @id @default(autoincrement())
-  nickname     String       @unique
-  bp           Int          @default(10000)
-  diamond      Int          @default(0)
-  createdAt    DateTime     @default(now())
-  playerHeroes PlayerHero[]
-}
-
-model PlayerHero {
-  id        Int      @id @default(autoincrement())
-  playerId  Int
-  heroId    Int
-  currency  Currency
-  pricePaid Int
-
-  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
-  hero   Hero   @relation(fields: [heroId], references: [id])
-
-  @@unique([playerId, heroId])
 }
